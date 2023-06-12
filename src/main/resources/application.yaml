@@ -1,0 +1,26 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"
+
+server:
+  port: 8084
+
+spring:
+  cloud:
+    gateway:
+      global-filter:
+        - GlobalRequestPreFilter
+      routes:
+        - id: micro-service
+          uri: http://localhost:8080/
+          predicates:
+            - Path=/hello-service/v1/*
+            - Header=x-auth-token, [A-Z0-9]+
+          filters:
+            - GlobalRequestPreFilter
+            - RedirectionFilter
+          metadata:
+            - redirectURI: http://localhost:8080
